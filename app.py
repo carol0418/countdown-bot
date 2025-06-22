@@ -223,16 +223,16 @@ def start_scheduler_if_not_started():
             logger.error("Firestore client not available. Scheduler will not be started.")
             return
 
-        # 每天早上 9 點 00 分發送訊息
+        # 每天早上 7 點 00 分發送訊息
         scheduler.add_job(
             send_daily_countdown_message_job,
-            CronTrigger(hour=9, minute=0, timezone="Asia/Taipei"),
+            CronTrigger(hour=20, minute=22, timezone="Asia/Taipei"),
             id='daily_countdown',
             replace_existing=True
         )
         scheduler.start()
         scheduler_started = True
-        logger.info("Scheduler started and daily countdown job added for 9:00 AM Taipei time.")
+        logger.info("Scheduler started and daily countdown job added for 10:22 PM Taipei time.")
 
 atexit.register(lambda: scheduler.shutdown())
 
