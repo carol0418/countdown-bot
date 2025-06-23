@@ -255,7 +255,7 @@ def start_scheduler_if_not_started():
         # 添加每天早上 7 點 00 分發送訊息的任務
         scheduler.add_job(
             send_daily_countdown_message_job,
-            CronTrigger(hour=21, minute=5, timezone="Asia/Taipei"), # 設定為台北時間早上 7 點
+            CronTrigger(hour=21, minute=10, timezone="Asia/Taipei"), # 設定為台北時間早上 7 點
             id='daily_countdown', # 給任務一個唯一的 ID
             replace_existing=True # 如果任務已存在，則替換它
         )
@@ -290,6 +290,12 @@ def callback():
         abort(400) # 返回 400 Bad Request 錯誤
 
     return 'OK' # 成功處理後返回 'OK'
+
+# 例如在檔案中的 @app.route("/callback") 附近新增
+@app.route("/wakeup", methods=['GET'])
+def wakeup():
+    logger.info("Wakeup endpoint hit by external service.")
+    return 'OK', 200
 
 # --- LINE 訊息事件處理 ---
 @line_handler.add(MessageEvent, message=TextMessageContent)
