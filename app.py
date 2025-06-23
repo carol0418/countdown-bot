@@ -226,13 +226,13 @@ def start_scheduler_if_not_started():
         # 每天早上 7 點 00 分發送訊息
         scheduler.add_job(
             send_daily_countdown_message_job,
-            CronTrigger(hour=7, minute=0, timezone="Asia/Taipei"),
+            CronTrigger(hour=20, minute=15, timezone="Asia/Taipei"),
             id='daily_countdown',
             replace_existing=True
         )
         scheduler.start()
         scheduler_started = True
-        logger.info("Scheduler started and daily countdown job added for 7:00 AM Taipei time.")
+        logger.info("Scheduler started and daily countdown job added for 8:15 PM Taipei time.")
 
 atexit.register(lambda: scheduler.shutdown())
 
@@ -275,10 +275,14 @@ def handle_follow(event):
         line_bot_api = MessagingApi(api_client)
         user_id = event.source.user_id # 取得加好友的用戶 ID
 
-        # 將用戶 ID 儲存起來，未來可以用於主動推播訊息
-        config = load_config()
-        config["last_active_user_id"] = user_id
-        save_config(config)
+        config = load_config() # 從 Firestore 載入最新配置
+        # **重要修正**：確保將 user_id 添加到 registered_users 列表中，且避免重複
+        if user_id not in config.get("registered_users", []): # 使用 .get() 確保鍵存在
+            config["registered_users"].append(user_id)
+            save_config(config) # 保存更新後的配置到 Firestore
+            logger.info(f"User {user_id} added to registered_users in Firestore.")
+        else:
+            logger.info(f"User {user_id} already in registered_users.")
 
         # 回覆歡迎訊息給新加入的用戶
         messages = [TextMessage(text="哈囉！謝謝你加入這個倒數計時小幫手😎！\n\n🍊你可以輸入: \n【設定考試日期 YYYY-MM-DD】來設定你的重要日期\n\n例如：\n'設定考試日期 2025-10-26'\n\n🍊隨時輸入 '查詢剩餘天數' 就能知道距離考試還有多久喔！\n\n準備好了嗎？我們一起努力！\nd(`･∀･)b"),
@@ -303,11 +307,16 @@ def handle_join(event):
 
         if event.source.type == "group":
             group_id = event.source.group_id # 取得 Bot 所在群組的 ID
-            # 將群組 ID 儲存起來，未來可以用於主動推播訊息到這個群組
-            config = load_config()
-            config["last_active_group_id"] = group_id
-            save_config(config)
-            logger.info(f"Bot joined Group ID: {group_id}")
+
+            config = load_config() # 從 Firestore 載入最新配置
+            # **重要修正**：確保將 group_id 添加到 registered_groups 列表中，且避免重複
+            if group_id not in config.get("registered_groups", []): # 使用 .get() 確保鍵存在
+                config["registered_groups"].append(group_id)
+                save_config(config) # 保存更新後的配置到 Firestore
+                logger.info(f"Bot joined Group ID: {group_id} and added to registered_groups in Firestore.")
+            else:
+                logger.info(f"Group ID: {group_id} already in registered_groups.")
+
             # 發送群組歡迎訊息
             messages = [TextMessage(text = "哈囉！大家好！\n我是你們的倒數計時小幫手😎，很高興加入這個群組！\n\n🍊群組裡面的任何一位成員都可以輸入【設定考試日期 YYYY-MM-DD】來設定日期\n\n例如：\n'設定考試日期 2025-10-26'\n\n🍊隨時輸入【查詢剩餘天數】就能知道距離考試還有多久喔！\n\n讓我們一起為目標衝刺吧！\nd(`･∀･)b"),
                         StickerMessage(package_id='11538', sticker_id='51626494')
