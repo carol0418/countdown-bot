@@ -255,7 +255,7 @@ def start_scheduler_if_not_started():
         # 添加每天早上 7 點 00 分發送訊息的任務
         scheduler.add_job(
             send_daily_countdown_message_job,
-            CronTrigger(hour=7, minute=0, timezone="Asia/Taipei"), # 設定為台北時間早上 7 點
+            CronTrigger(hour=21, minute=5, timezone="Asia/Taipei"), # 設定為台北時間早上 7 點
             id='daily_countdown', # 給任務一個唯一的 ID
             replace_existing=True # 如果任務已存在，則替換它
         )
