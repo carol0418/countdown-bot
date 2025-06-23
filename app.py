@@ -255,13 +255,13 @@ def start_scheduler_if_not_started():
         # 添加每天早上 7 點 00 分發送訊息的任務
         scheduler.add_job(
             send_daily_countdown_message_job,
-            CronTrigger(hour=20, minute=31, timezone="Asia/Taipei"), # 設定為台北時間早上 7 點
+            CronTrigger(hour=7, minute=0, timezone="Asia/Taipei"), # 設定為台北時間早上 7 點
             id='daily_countdown', # 給任務一個唯一的 ID
             replace_existing=True # 如果任務已存在，則替換它
         )
         scheduler.start() # 啟動排程器
         scheduler_started = True # 將旗標設為 True，防止重複啟動
-        logger.info("Scheduler started and daily countdown job added for 8:31 PM Taipei time.")
+        logger.info("Scheduler started and daily countdown job added for 7:00 AM Taipei time.")
 
 # 註冊一個在 Python 直譯器關閉時執行的函數，用於關閉排程器
 # 這有助於應用程式的正常終止
