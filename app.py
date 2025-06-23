@@ -226,13 +226,13 @@ def start_scheduler_if_not_started():
         # 每天早上 7 點 00 分發送訊息
         scheduler.add_job(
             send_daily_countdown_message_job,
-            CronTrigger(hour=20, minute=15, timezone="Asia/Taipei"),
+            CronTrigger(hour=20, minute=22, timezone="Asia/Taipei"),
             id='daily_countdown',
             replace_existing=True
         )
         scheduler.start()
         scheduler_started = True
-        logger.info("Scheduler started and daily countdown job added for 8:15 PM Taipei time.")
+        logger.info("Scheduler started and daily countdown job added for 8:22 PM Taipei time.")
 
 atexit.register(lambda: scheduler.shutdown())
 
