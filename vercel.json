@@ -22,7 +22,7 @@
   "crons": [
     {
       "path": "/api/send_daily_job",
-      "schedule": "10 23 * * *"
+      "schedule": "0 6 * * *"
     }
   ]
 }
