@@ -1,15 +1,28 @@
 {
-    "version": 2,
-    "builds": [
-        {
-            "src": "app.py",
-            "use": "@vercel/python"
-        }
-    ],
-    "routes": [
-        {
-          "src": "/(.*)", 
-          "dest": "app.py"
-        }
-    ]
+  "builds": [
+    {
+      "src": "app.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/send_daily_job.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/callback",
+      "dest": "app.py"
+    },
+    {
+      "src": "/api/send_daily_job",
+      "dest": "api/send_daily_job.py"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/send_daily_job",
+      "schedule": "10 23 * * *"
+    }
+  ]
 }
