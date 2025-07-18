@@ -9,6 +9,9 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from firebase_admin import exceptions as firebase_exceptions
 
+import pytz 
+from datetime import datetime
+
 from linebot.v3 import (
     WebhookHandler
 )
@@ -59,12 +62,15 @@ except (ValueError, json.JSONDecodeError, firebase_exceptions.FirebaseError, Exc
 
 # --- 訊息生成函數 (維持不變) ---
 def get_countdown_message(exam_date_str):
-    # ... 此函數的程式碼完全不變 ...
     if not exam_date_str:
         return "很抱歉，尚未設定考試日期。請輸入'設定考試日期 YYYY-MM-DD'來設定。"
     try:
+        taipei_tz = pytz.timezone("Asia/Taipei") # 定義台北時區
         exam_date = datetime.strptime(exam_date_str, "%Y-%m-%d")
-        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        exam_date_aware = taipei_tz.localize(exam_date)
+        today_aware = datetime.now(taipei_tz)
+        today_aware = today_aware.replace(hour=0, minute=0, second=0, microsecond=0)
+        exam_date_aware = exam_date_aware.replace(hour=0, minute=0, second=0, microsecond=0)
         time_left = exam_date - today
         days_left = time_left.days
         if days_left > 0:
