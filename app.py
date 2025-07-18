@@ -64,15 +64,24 @@ except (ValueError, json.JSONDecodeError, firebase_exceptions.FirebaseError, Exc
 def get_countdown_message(exam_date_str):
     if not exam_date_str:
         return "很抱歉，尚未設定考試日期。請輸入'設定考試日期 YYYY-MM-DD'來設定。"
-    try:
-        taipei_tz = pytz.timezone("Asia/Taipei") # 定義台北時區
-        exam_date = datetime.strptime(exam_date_str, "%Y-%m-%d")
-        exam_date_aware = taipei_tz.localize(exam_date)
+    try:    
+        # 1. 定義台北時區
+        taipei_tz = pytz.timezone("Asia/Taipei")
+
+        # 2. 處理考試日期，並使其具有時區資訊
+        exam_date_naive = datetime.strptime(exam_date_str, "%Y-%m-%d")
+        exam_date_aware = taipei_tz.localize(exam_date_naive)
+
+        # 3. 取得當下台北時間，並標準化為當天零點
         today_aware = datetime.now(taipei_tz)
-        today_aware = today_aware.replace(hour=0, minute=0, second=0, microsecond=0)
-        exam_date_aware = exam_date_aware.replace(hour=0, minute=0, second=0, microsecond=0)
-        time_left = exam_date - today
+        
+        # 4. 進行日期相減，變數名稱需保持一致
+        #    為了確保天數計算精確，我們只比較日期，不比較時間
+        time_left = exam_date_aware.date() - today_aware.date()
+        
+        # 5. 從結果中取得天數
         days_left = time_left.days
+        
         if days_left > 0:
             message = ""
             if days_left == 100: message = f"⌛時光飛逝，你只剩下{days_left} 天，趕快拿起書本來📚📚"
