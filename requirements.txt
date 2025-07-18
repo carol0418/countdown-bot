@@ -1,4 +1,4 @@
 line-bot-sdk==3.7.0
 flask==2.2.5
-APScheduler==3.10.1
+pytz
 firebase-admin
