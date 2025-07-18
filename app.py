@@ -80,12 +80,6 @@ def get_countdown_message(exam_date_str):
     except ValueError:
         return "考試日期格式錯誤，請檢查設定或重新設定。正確格式為YYYY-MM-DD。"
 
-# --- 【已移除】APScheduler 相關的所有程式碼 ---
-# scheduler = BackgroundScheduler(...)
-# send_daily_countdown_message_job()
-# @app.before_request ...
-# atexit.register(...)
-
 # --- LINE Bot Webhook 回調入口 (維持不變) ---
 @app.route("/callback", methods=['POST'])
 def callback():
